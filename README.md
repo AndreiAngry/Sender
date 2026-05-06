@@ -1,5 +1,6 @@
 Небольшая утилитка для отправки сырых событий в коллектор KUMA. Пытался сделать что-то вроде nc но с UI и под Windows. Возможно изобрёл велосипед)
-<img width="916" height="787" alt="image" src="https://github.com/user-attachments/assets/5cf12aa3-d09b-4031-b804-8476e3221e5c" />
+<img width="924" height="793" alt="image" src="https://github.com/user-attachments/assets/7e8c471f-d369-49f3-b04d-8d95cb493223" />
+
 Что можно:
 - Отправка одного события из поля Text
 - Отправка из файла построчно(ну так планировалось)
