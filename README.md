@@ -1,0 +1,2 @@
+Небольшая утилитка для отправки сырых событий в коллектор KUMA. Пытался сделать что-то вроде nc но с UI и под Windows. Возможно изобрёл велосипед)
+<img width="916" height="787" alt="image" src="https://github.com/user-attachments/assets/5cf12aa3-d09b-4031-b804-8476e3221e5c" />
