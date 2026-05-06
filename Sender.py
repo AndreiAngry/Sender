@@ -10,7 +10,7 @@ import queue
 class TurboSenderApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Turbo Net Sender")
+        self.root.title("Sender")
         self.root.geometry("920x760")
         self.root.minsize(860, 650)
 
@@ -39,6 +39,8 @@ class TurboSenderApp:
         self.delay = 0.0
         self.lines = []
 
+        self.separator = b"\n"
+
         self.addr = None
 
         self.build_ui()
@@ -66,6 +68,7 @@ class TurboSenderApp:
 
         tk.Label(frame, text="Protocol").grid(row=2, column=0, sticky="w", **pad)
         self.proto_var = tk.StringVar(value="UDP")
+
         ttk.Combobox(
             frame,
             textvariable=self.proto_var,
@@ -74,52 +77,114 @@ class TurboSenderApp:
         ).grid(row=2, column=1, sticky="ew", **pad)
 
         tk.Label(frame, text="Threads").grid(row=3, column=0, sticky="w", **pad)
+
         self.entry_threads = tk.Entry(frame)
         self.entry_threads.insert(0, "1")
         self.entry_threads.grid(row=3, column=1, sticky="ew", **pad)
 
         tk.Label(frame, text="Delay ms").grid(row=4, column=0, sticky="w", **pad)
+
         self.entry_delay = tk.Entry(frame)
         self.entry_delay.insert(0, "0")
         self.entry_delay.grid(row=4, column=1, sticky="ew", **pad)
 
-        tk.Label(frame, text="Mode").grid(row=5, column=0, sticky="w", **pad)
+        tk.Label(frame, text="Separator").grid(row=5, column=0, sticky="w", **pad)
+
+        self.entry_separator = tk.Entry(frame)
+        self.entry_separator.insert(0, "\\n")
+        self.entry_separator.grid(row=5, column=1, sticky="ew", **pad)
+
+        tk.Label(frame, text="Mode").grid(row=6, column=0, sticky="w", **pad)
+
         modef = tk.Frame(frame)
-        modef.grid(row=5, column=1, sticky="w", **pad)
+        modef.grid(row=6, column=1, sticky="w", **pad)
 
         self.mode_var = tk.StringVar(value="LOOP")
-        tk.Radiobutton(modef, text="Once", variable=self.mode_var, value="ONCE").pack(side="left")
-        tk.Radiobutton(modef, text="Loop", variable=self.mode_var, value="LOOP").pack(side="left")
 
-        tk.Label(frame, text="Source").grid(row=6, column=0, sticky="w", **pad)
+        tk.Radiobutton(
+            modef,
+            text="Once",
+            variable=self.mode_var,
+            value="ONCE"
+        ).pack(side="left")
+
+        tk.Radiobutton(
+            modef,
+            text="Loop",
+            variable=self.mode_var,
+            value="LOOP"
+        ).pack(side="left")
+
+        tk.Label(frame, text="Source").grid(row=7, column=0, sticky="w", **pad)
+
         srcf = tk.Frame(frame)
-        srcf.grid(row=6, column=1, sticky="w", **pad)
+        srcf.grid(row=7, column=1, sticky="w", **pad)
 
         self.source_var = tk.StringVar(value="TEXT")
-        tk.Radiobutton(srcf, text="Text", variable=self.source_var, value="TEXT").pack(side="left")
-        tk.Radiobutton(srcf, text="File", variable=self.source_var, value="FILE").pack(side="left")
 
-        tk.Label(frame, text="Text").grid(row=7, column=0, sticky="nw", **pad)
+        tk.Radiobutton(
+            srcf,
+            text="Text",
+            variable=self.source_var,
+            value="TEXT"
+        ).pack(side="left")
+
+        tk.Radiobutton(
+            srcf,
+            text="File",
+            variable=self.source_var,
+            value="FILE"
+        ).pack(side="left")
+
+        tk.Label(frame, text="Text").grid(row=8, column=0, sticky="nw", **pad)
+
         self.text_input = tk.Text(frame, height=8)
-        self.text_input.grid(row=7, column=1, sticky="nsew", **pad)
+        self.text_input.grid(row=8, column=1, sticky="nsew", **pad)
 
-        tk.Label(frame, text="File").grid(row=8, column=0, sticky="w", **pad)
+        tk.Label(frame, text="File").grid(row=9, column=0, sticky="w", **pad)
+
         ff = tk.Frame(frame)
-        ff.grid(row=8, column=1, sticky="ew", **pad)
+        ff.grid(row=9, column=1, sticky="ew", **pad)
 
         self.file_var = tk.StringVar()
-        tk.Entry(ff, textvariable=self.file_var).pack(side="left", fill="x", expand=True)
-        tk.Button(ff, text="Browse", command=self.select_file).pack(side="left")
+
+        tk.Entry(
+            ff,
+            textvariable=self.file_var
+        ).pack(side="left", fill="x", expand=True)
+
+        tk.Button(
+            ff,
+            text="Browse",
+            command=self.select_file
+        ).pack(side="left")
 
         bf = tk.Frame(frame)
-        bf.grid(row=9, column=0, columnspan=2, sticky="ew", **pad)
+        bf.grid(row=10, column=0, columnspan=2, sticky="ew", **pad)
 
-        tk.Button(bf, text="Start", width=18, command=self.start_send).pack(side="left", padx=3)
-        tk.Button(bf, text="Stop", width=18, command=self.stop_send).pack(side="left", padx=3)
-        tk.Button(bf, text="Clear Log", width=18, command=self.clear_log).pack(side="left", padx=3)
+        tk.Button(
+            bf,
+            text="Start",
+            width=18,
+            command=self.start_send
+        ).pack(side="left", padx=3)
+
+        tk.Button(
+            bf,
+            text="Stop",
+            width=18,
+            command=self.stop_send
+        ).pack(side="left", padx=3)
+
+        tk.Button(
+            bf,
+            text="Clear Log",
+            width=18,
+            command=self.clear_log
+        ).pack(side="left", padx=3)
 
         stats = tk.LabelFrame(frame, text="Statistics")
-        stats.grid(row=10, column=0, columnspan=2, sticky="ew", padx=8, pady=8)
+        stats.grid(row=11, column=0, columnspan=2, sticky="ew", padx=8, pady=8)
 
         self.lbl_pps = tk.Label(stats, text="PPS: 0")
         self.lbl_pps.pack(anchor="w")
@@ -133,13 +198,13 @@ class TurboSenderApp:
         self.lbl_err = tk.Label(stats, text="Errors: 0")
         self.lbl_err.pack(anchor="w")
 
-        tk.Label(frame, text="Log").grid(row=11, column=0, sticky="nw", **pad)
+        tk.Label(frame, text="Log").grid(row=12, column=0, sticky="nw", **pad)
 
         self.log_box = tk.Text(frame, height=18)
-        self.log_box.grid(row=11, column=1, sticky="nsew", **pad)
+        self.log_box.grid(row=12, column=1, sticky="nsew", **pad)
 
         frame.columnconfigure(1, weight=1)
-        frame.rowconfigure(11, weight=1)
+        frame.rowconfigure(12, weight=1)
 
     # =========================
     # Context menu
@@ -148,17 +213,35 @@ class TurboSenderApp:
         self.context_widget = None
 
         self.menu = tk.Menu(self.root, tearoff=0)
-        self.menu.add_command(label="Cut", command=lambda: self.context_widget.event_generate("<<Cut>>"))
-        self.menu.add_command(label="Copy", command=lambda: self.context_widget.event_generate("<<Copy>>"))
-        self.menu.add_command(label="Paste", command=lambda: self.context_widget.event_generate("<<Paste>>"))
+
+        self.menu.add_command(
+            label="Cut",
+            command=lambda: self.context_widget.event_generate("<<Cut>>")
+        )
+
+        self.menu.add_command(
+            label="Copy",
+            command=lambda: self.context_widget.event_generate("<<Copy>>")
+        )
+
+        self.menu.add_command(
+            label="Paste",
+            command=lambda: self.context_widget.event_generate("<<Paste>>")
+        )
+
         self.menu.add_separator()
-        self.menu.add_command(label="Select All", command=self.select_all)
+
+        self.menu.add_command(
+            label="Select All",
+            command=self.select_all
+        )
 
         widgets = (
             self.entry_host,
             self.entry_port,
             self.entry_threads,
             self.entry_delay,
+            self.entry_separator,
             self.text_input,
             self.log_box
         )
@@ -195,6 +278,7 @@ class TurboSenderApp:
         now = time.strftime
 
         count = 0
+
         while count < 300:
             try:
                 msg = self.log_queue.get_nowait()
@@ -205,9 +289,13 @@ class TurboSenderApp:
             count += 1
 
         if count:
-            line_count = int(self.log_box.index("end-1c").split(".")[0])
+            line_count = int(
+                self.log_box.index("end-1c").split(".")[0]
+            )
+
             if line_count > 1000:
                 self.log_box.delete("1.0", "300.0")
+
             self.log_box.see(end)
 
         self.root.after(100, self.flush_logs)
@@ -228,7 +316,9 @@ class TurboSenderApp:
             self.last_bytes = total_bytes
 
         self.lbl_pps.config(text=f"PPS: {pps}")
-        self.lbl_mbps.config(text=f"Mbps: {(bps * 8) / 1_000_000:.2f}")
+        self.lbl_mbps.config(
+            text=f"Mbps: {(bps * 8) / 1_000_000:.2f}"
+        )
         self.lbl_total.config(text=f"Packets: {packets}")
         self.lbl_err.config(text=f"Errors: {errors}")
 
@@ -242,20 +332,38 @@ class TurboSenderApp:
 
     def select_file(self):
         path = filedialog.askopenfilename()
+
         if path:
             self.file_var.set(path)
 
     def load_lines(self):
+        result = []
+
         if self.source_var.get() == "FILE":
             path = self.file_var.get().strip()
+
             if not os.path.isfile(path):
                 raise ValueError("File not found")
 
             with open(path, "rb") as f:
-                return [line.rstrip(b"\r\n") for line in f if line.strip()]
+                for line in f:
+                    line = line.rstrip(b"\r\n")
 
-        txt = self.text_input.get("1.0", tk.END).splitlines()
-        return [x.encode("utf-8") for x in txt if x.strip()]
+                    if line:
+                        result.append(line + self.separator)
+
+        else:
+            txt = self.text_input.get("1.0", tk.END).splitlines()
+
+            for x in txt:
+                x = x.strip()
+
+                if x:
+                    result.append(
+                        x.encode("utf-8") + self.separator
+                    )
+
+        return result
 
     # =========================
     # Start / Stop
@@ -267,15 +375,34 @@ class TurboSenderApp:
         try:
             self.host = self.entry_host.get().strip()
             self.ip = socket.gethostbyname(self.host)
-            self.port = int(self.entry_port.get().strip())
+
+            self.port = int(
+                self.entry_port.get().strip()
+            )
 
             self.proto = self.proto_var.get()
             self.mode = self.mode_var.get()
 
-            self.threads = max(1, min(256, int(self.entry_threads.get().strip())))
-            self.delay = float(self.entry_delay.get().strip()) / 1000.0
+            self.threads = max(
+                1,
+                min(256, int(self.entry_threads.get().strip()))
+            )
+
+            self.delay = (
+                float(self.entry_delay.get().strip()) / 1000.0
+            )
+
+            sep = self.entry_separator.get()
+
+            self.separator = (
+                sep
+                .encode("utf-8")
+                .decode("unicode_escape")
+                .encode("utf-8")
+            )
 
             self.lines = self.load_lines()
+
             if not self.lines:
                 raise ValueError("No data")
 
@@ -284,11 +411,13 @@ class TurboSenderApp:
             self.sent_packets = 0
             self.sent_bytes = 0
             self.errors = 0
+
             self.last_packets = 0
             self.last_bytes = 0
 
             self.cursor = 0
             self.workers_alive = self.threads
+
             self.running = True
 
             for i in range(self.threads):
@@ -298,7 +427,11 @@ class TurboSenderApp:
                     daemon=True
                 ).start()
 
-            self.log(f"Started {self.proto} {self.mode} {self.threads} threads")
+            self.log(
+                f"Started {self.proto} "
+                f"{self.mode} "
+                f"{self.threads} threads"
+            )
 
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -318,6 +451,7 @@ class TurboSenderApp:
             if self.mode == "ONCE":
                 if idx >= len(self.lines):
                     return None
+
                 return self.lines[idx]
 
             return self.lines[idx % len(self.lines)]
@@ -327,11 +461,19 @@ class TurboSenderApp:
     # =========================
     def open_socket(self):
         if self.proto == "UDP":
-            return socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            return socket.socket(
+                socket.AF_INET,
+                socket.SOCK_DGRAM
+            )
 
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = socket.socket(
+            socket.AF_INET,
+            socket.SOCK_STREAM
+        )
+
         sock.settimeout(5)
         sock.connect(self.addr)
+
         return sock
 
     # =========================
@@ -356,6 +498,7 @@ class TurboSenderApp:
 
             while running_ref.running:
                 data = self.get_next_line()
+
                 if data is None:
                     break
 
@@ -402,6 +545,7 @@ class TurboSenderApp:
 
             with self.work_lock:
                 self.workers_alive -= 1
+
                 if self.workers_alive <= 0:
                     self.running = False
                     self.log("Finished")
